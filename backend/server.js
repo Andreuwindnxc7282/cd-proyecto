@@ -4,11 +4,12 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Rutas (a implementar)
-app.use('/tasks', require('./routes/tasks'));
+// Rutas
+app.use('/api/tasks', require('./routes/tasks'));
 
+// Ruta de prueba
 app.get('/', (req, res) => {
-  res.send('API de To-Do List funcionando ');
+  res.json({ message: 'Backend de To-Do List funcionando' });
 });
 
 app.listen(PORT, () => {
