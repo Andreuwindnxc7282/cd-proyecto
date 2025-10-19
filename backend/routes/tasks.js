@@ -78,6 +78,7 @@ router.delete('/completed', async (req, res) => {
     const count = await Task.deleteAllCompleted();
     res.json({ message: `${count} tareas completadas eliminadas` });
   } catch (err) {
+    console.error('❌ Error en POST /tasks:', err);
     res.status(500).json({ error: err.message });
   }
 });
