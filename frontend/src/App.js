@@ -8,6 +8,8 @@ function App() {
   const [newTask, setNewTask] = useState({ title: '', description: '' });
   const [filter, setFilter] = useState('all'); // all, completed, pending
   const [loading, setLoading] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [editForm, setEditForm] = useState({ title: '', description: '' });
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -98,6 +100,36 @@ function App() {
     }
   };
 
+  const handleEditTask = (task) => {
+    setEditingTask(task.id);
+    setEditForm({ title: task.title, description: task.description || '' });
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editForm.title.trim()) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/${editingTask}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+      if (response.ok) {
+        setEditingTask(null);
+        setEditForm({ title: '', description: '' });
+        fetchTasks();
+      }
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTask(null);
+    setEditForm({ title: '', description: '' });
+  };
+
   const filteredTasks = tasks.filter(task => {
     if (filter === 'completed') return task.completed;
     if (filter === 'pending') return !task.completed;
@@ -152,11 +184,39 @@ function App() {
                 onChange={() => handleToggleComplete(task.id, task.completed)}
               />
               <div className="task-content">
-                <h3>{task.title}</h3>
-                {task.description && <p>{task.description}</p>}
-                <small>Created: {new Date(task.createdAt).toLocaleString()}</small>
+                {editingTask === task.id ? (
+                  <form onSubmit={handleSaveEdit} className="edit-form">
+                    <input
+                      type="text"
+                      value={editForm.title}
+                      onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                      required
+                    />
+                    <input
+                      type="text"
+                      value={editForm.description}
+                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                      placeholder="Description (optional)"
+                    />
+                    <div className="edit-buttons">
+                      <button type="submit">Save</button>
+                      <button type="button" onClick={handleCancelEdit}>Cancel</button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <h3>{task.title}</h3>
+                    {task.description && <p>{task.description}</p>}
+                    <small>Created: {new Date(task.createdAt).toLocaleString()}</small>
+                  </>
+                )}
               </div>
-              <button onClick={() => handleDeleteTask(task.id)} className="delete-btn">Delete</button>
+              {editingTask !== task.id && (
+                <div className="task-actions">
+                  <button onClick={() => handleEditTask(task)} className="edit-btn">Edit</button>
+                  <button onClick={() => handleDeleteTask(task.id)} className="delete-btn">Delete</button>
+                </div>
+              )}
             </li>
           ))}
         </ul>
