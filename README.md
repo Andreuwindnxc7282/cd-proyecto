@@ -1,9 +1,9 @@
 # To-Do List - CRUD con Node.js y MySQL
 
 ## Integrantes
-- [Tu nombre]
-- [Nombre compañero 2]
-- [Nombre compañero 3]
+- Onik Orosco
+- Andre Olivera
+- Americo Baca
 
 ## Tecnologías
 - Backend: Node.js + Express + MySQL
