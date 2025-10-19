@@ -1,7 +1,12 @@
 const express = require('express');
+const cors = require('cors'); // ← Importa cors
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Habilita CORS para todos los orígenes (solo en desarrollo)
+app.use(cors());
+
+// Permite que el backend reciba JSON
 app.use(express.json());
 
 // Rutas
